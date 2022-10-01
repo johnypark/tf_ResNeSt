@@ -21,7 +21,7 @@ from tensorflow.keras.layers import (
     MaxPooling2D,
     Conv1D,
 )
-from tf_ResNeSt_and_RegNet.transformer import Transformer
+from tf_ResNeSt.transformer import Transformer
 
 
 def get_flops(model):
