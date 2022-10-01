@@ -22,7 +22,7 @@ from tensorflow.keras.layers import (
     Conv1D,
 )
 
-from models.transformer import Transformer
+from tf_ResNeSt_and_RegNet.transformer import Transformer
 
 
 def get_flops(model):
