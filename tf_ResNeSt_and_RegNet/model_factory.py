@@ -5,8 +5,14 @@ from .res34_DETR import DETR as res34_DETR
 from .ResNest50_DETR import DETR as ResNest50_DETR
 from .GENet import GENet
 
-def get_model(model_name='ResNest50',input_shape=(224,224,3),n_classes=81,
-                verbose=False,dropout_rate=0,fc_activation=None,**kwargs):
+def get_model(model_name='ResNest50',
+              input_shape=(224,224,3),
+              n_classes=81,
+              include_top = True,
+                verbose=False,
+                dropout_rate=0,
+                fc_activation=None,
+                **kwargs):
     '''get_model
     input_shape: (h,w,c)
     fc_activation: sigmoid,softmax
@@ -83,10 +89,22 @@ def get_model(model_name='ResNest50',input_shape=(224,224,3),n_classes=81,
 
 
     if model_name in resnest_parameters.keys():
-        model = ResNest(verbose=verbose, input_shape=input_shape,
-        n_classes=n_classes, dropout_rate=dropout_rate, fc_activation=fc_activation,
-        blocks_set=resnest_parameters[model_name]['blocks_set'], radix=2, groups=1, bottleneck_width=64, deep_stem=True,
-        stem_width=resnest_parameters[model_name]['stem_width'], avg_down=True, avd=True, avd_first=False,**kwargs).build()
+        model = ResNest(verbose=verbose, 
+                        input_shape=input_shape,
+        n_classes=n_classes, 
+        dropout_rate=dropout_rate, 
+        fc_activation=fc_activation,
+        blocks_set=resnest_parameters[model_name]['blocks_set'], 
+        radix=2, 
+        groups=1, 
+        bottleneck_width=64, 
+        deep_stem=True,
+        stem_width=resnest_parameters[model_name]['stem_width'], 
+        avg_down=True, 
+        avd=True, 
+        avd_first=False,
+        include_top = include_top,
+        **kwargs).build()
     
     elif model_name in regnet_parameters.keys():
         model = RegNet(verbose=verbose, input_shape=input_shape,

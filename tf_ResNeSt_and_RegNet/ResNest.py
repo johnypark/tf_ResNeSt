@@ -104,14 +104,31 @@ class GroupedConv2D(object):
 
 
 class ResNest:
-    def __init__(self, verbose=False, input_shape=(224, 224, 3), active="relu", n_classes=81,
-                 dropout_rate=0.2, fc_activation=None, blocks_set=[3, 4, 6, 3], radix=2, groups=1,
-                 bottleneck_width=64, deep_stem=True, stem_width=32, block_expansion=4, avg_down=True,
-                 avd=True, avd_first=False, preact=False, using_basic_block=False,using_cb=False):
+    def __init__(self, verbose=False, 
+                 input_shape=(224, 224, 3), 
+                 active="relu", 
+                 include_top = True,
+                 n_classes=81,
+                 dropout_rate=0.2, 
+                 fc_activation=None, 
+                 blocks_set=[3, 4, 6, 3], 
+                 radix=2, 
+                 groups=1,
+                 bottleneck_width=64, 
+                 deep_stem=True, 
+                 stem_width=32, 
+                 block_expansion=4, 
+                 avg_down=True,
+                 avd=True, 
+                 avd_first=False, 
+                 preact=False, 
+                 using_basic_block=False,
+                 using_cb=False):
         self.channel_axis = -1  # not for change
         self.verbose = verbose
         self.active = active  # default relu
         self.input_shape = input_shape
+        self.include_top = include_top
         self.n_classes = n_classes
         self.dropout_rate = dropout_rate
         self.fc_activation = fc_activation
@@ -402,21 +419,24 @@ class ResNest:
             x = self._make_layer(x, blocks=self.blocks_set[idx], filters=b1_b3_filters[idx], stride=2)
             if self.verbose: print('----- layer {} out {} -----'.format(idx,x.shape))
 
-        x = GlobalAveragePooling2D(name='avg_pool')(x) 
-        if self.verbose:
-            print("pool_out:", x.shape) # remove the concats var
+        if include_top:
+            x = GlobalAveragePooling2D(name='avg_pool')(x) 
+            if self.verbose:
+                print("pool_out:", x.shape) # remove the concats var
 
-        if self.dropout_rate > 0:
-            x = Dropout(self.dropout_rate, noise_shape=None)(x)
+            if self.dropout_rate > 0:
+                x = Dropout(self.dropout_rate, noise_shape=None)(x)
 
-        fc_out = Dense(self.n_classes, kernel_initializer="he_normal", use_bias=False, name="fc_NObias")(x) # replace concats to x
-        if self.verbose:
-            print("fc_out:", fc_out.shape)
+            fc_out = Dense(self.n_classes, kernel_initializer="he_normal", use_bias=False, name="fc_NObias")(x) # replace concats to x
+            if self.verbose:
+                print("fc_out:", fc_out.shape)
 
-        if self.fc_activation:
-            fc_out = Activation(self.fc_activation)(fc_out)
+            if self.fc_activation:
+                output = Activation(self.fc_activation)(fc_out)
+        else:
+            output = x
 
-        model = models.Model(inputs=input_sig, outputs=fc_out)
+        model = models.Model(inputs=input_sig, outputs=output)
 
         if self.verbose:
             print("Resnest builded with input {}, output{}".format(input_sig.shape, fc_out.shape))
