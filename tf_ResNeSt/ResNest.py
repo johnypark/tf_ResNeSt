@@ -419,7 +419,7 @@ class ResNest:
             x = self._make_layer(x, blocks=self.blocks_set[idx], filters=b1_b3_filters[idx], stride=2)
             if self.verbose: print('----- layer {} out {} -----'.format(idx,x.shape))
 
-        if include_top:
+        if self.include_top:
             x = GlobalAveragePooling2D(name='avg_pool')(x) 
             if self.verbose:
                 print("pool_out:", x.shape) # remove the concats var
